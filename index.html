@@ -157,7 +157,7 @@
       pointer-events: none;
     }
 
-    /* İŞ BİRLİĞİ & REKLAM ÇAĞRI KARTI (ORTAK STİL) */
+    
     .partner-banner {
       width: 100%;
       max-width: 820px;
@@ -337,7 +337,7 @@
     }
     .toggle-more-btn:hover { color: var(--gold); border-color: var(--gold-border); }
 
-    /* MODALLAR (KUPON & İLETİŞİM) */
+    
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -402,7 +402,7 @@
     }
     .contact-opt-left { display: flex; align-items: center; gap: 10px; }
 
-    /* TOAST */
+    
     .toast {
       position: fixed;
       bottom: 24px;
@@ -421,7 +421,7 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* FOOTER */
+    
     footer {
       margin-top: auto;
       padding: 32px 0 12px;
@@ -465,7 +465,7 @@
     <span class="search-icon">🔍</span>
   </div>
 
-  <!-- ÜST TİCARİ İŞ BİRLİĞİ BANNERI -->
+  
   <div class="partner-banner">
     <div class="partner-text">
       <div class="partner-title">✨ Markanızı veya Muadil Kodlarınızı Öne Çıkarın</div>
@@ -474,10 +474,10 @@
     <button class="partner-action-btn" onclick="openPartnerModal()">İş Birliği Başlat ➔</button>
   </div>
 
-  <!-- PARFÜM LİSTESİ -->
+  
   <main class="catalog-list" id="catalogList"></main>
 
-  <!-- ALT TİCARİ İŞ BİRLİĞİ BANNERI -->
+  
   <div class="partner-banner bottom-banner">
     <div class="partner-text">
       <div class="partner-title">💼 Koku Markanız İçin Satış Ortaklığı</div>
@@ -488,7 +488,7 @@
 
   <div class="toast" id="toast">📋 Kod kopyalandı!</div>
 
-  <!-- İNDİRİM KODLARI MODALI -->
+  
   <div class="modal-overlay" id="couponsModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -499,7 +499,7 @@
     </div>
   </div>
 
-  <!-- İŞ BİRLİĞİ & İLETİŞİM SEÇİM MODALI -->
+  
   <div class="modal-overlay" id="partnerModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -553,7 +553,7 @@
     async function loadData() {
       listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Muadil kodları yükleniyor...</div>';
       try {
-        // limit=15 ekleyerek ilk etapta sadece en popüler 15 veriyi çekiyoruz
+        
         const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=15`, {
           method: 'GET',
           headers: {
@@ -682,7 +682,7 @@
       render(filtered);
     });
 
-    // KUPONLAR MODAL
+    
     window.openCouponsModal = async function() {
       const container = document.getElementById('couponsContainer');
       container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">⏳ Kuponlar kontrol ediliyor...</div>';
@@ -733,11 +733,11 @@
     };
     window.closeCouponsModal = function() { document.getElementById('couponsModal').style.display = 'none'; };
 
-    // İŞ BİRLİĞİ MODAL
+    
     window.openPartnerModal = function() { document.getElementById('partnerModal').style.display = 'flex'; };
     window.closePartnerModal = function() { document.getElementById('partnerModal').style.display = 'none'; };
 
-    // TEMA DEĞİŞTİRİCİ
+    
     const themeBtn = document.getElementById('themeBtn');
     const savedTheme = localStorage.getItem('kk_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
