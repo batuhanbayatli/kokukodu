@@ -684,12 +684,12 @@
       });
     }
 
-    // Metinleri toleranslı hale getiren temizleme fonksiyonu
+    // Metinleri toleranslı ve aramalara karşı esnek hale getiren fonksiyon
     function normalizeText(text) {
       if (!text) return '';
-      return text
+      return String(text)
         .toLocaleLowerCase('tr-TR')
-        .replace(/['’`´\-\.\,\/\(\)]/g, '') // Kesme ve noktalama işaretlerini kaldırır
+        .replace(/['’`´\-\.\,\/\(\)\:]/g, '')
         .replace(/ğ/g, 'g')
         .replace(/ü/g, 'u')
         .replace(/ş/g, 's')
@@ -699,9 +699,21 @@
         .replace(/é|è|ê|ë/g, 'e')
         .replace(/â|à|ä/g, 'a')
         .replace(/ô/g, 'o')
+        .replace(/\s+/g, ' ')
         .trim();
     }
 
+    // Güvenli muadil listesi çıkarıcı
+    function getSafeDupes(dupesData) {
+      if (!dupesData) return [];
+      if (Array.isArray(dupesData)) return dupesData;
+      if (typeof dupesData === 'string') {
+        try { return JSON.parse(dupesData); } catch (e) { return []; }
+      }
+      return [];
+    }
+
+    // Arama Dinleyicisi
     searchInput.addEventListener('input', (e) => {
       const rawQuery = e.target.value;
       const normalizedQuery = normalizeText(rawQuery);
@@ -712,42 +724,18 @@
       }
 
       // Kullanıcının yazdığı her kelimeyi ayır (Örn: "victoria" ve "secret")
-      const queryTokens = normalizedQuery.split(/\s+/).filter(t => t.length > 0);
+      const queryTokens = normalizedQuery.split(' ').filter(t => t.length > 0);
 
       const filtered = allPerfumes.filter(p => {
-        // Parfümün adı, markası, cinsiyeti ve içindeki tüm muadil kodlarını tek bir metin yapıyoruz
-        const dupeContent = (p.dupes || []).map(d => `${d.brand} ${d.code}`).join(' ');
-        const searchableText = normalizeText(`${p.name} ${p.brand} ${p.gender} ${dupeContent}`);
+        const dupes = getSafeDupes(p.dupes);
+        const dupeContent = dupes.map(d => `${d.brand || ''} ${d.code || ''}`).join(' ');
+        const searchableText = normalizeText(`${p.name || ''} ${p.brand || ''} ${p.gender || ''} ${dupeContent}`);
 
-        // Yazılan tüm kelimeler bu kartın içinde var mı? (Sırası hiç fark etmez)
+        // Yazılan tüm kelimeler bu kartta geçiyor mu kontrol et
         return queryTokens.every(token => searchableText.includes(token));
       });
 
       render(filtered);
-    });
-
-    searchInput.addEventListener('input', (e) => {
-      const rawQuery = e.target.value;
-      const normalizedQuery = normalizeText(rawQuery);
-
-      if (!normalizedQuery) {
-        currentFiltered = allPerfumes;
-      } else {
-        // Kullanıcının yazdığı tüm kelimeleri ayırıyoruz (Örn: ["victoria", "secret"])
-        const queryTokens = normalizedQuery.split(' ').filter(t => t.length > 0);
-
-        currentFiltered = allPerfumes.filter(p => {
-          // Karttaki tüm aranabilir alanları tek bir normalize metinde topluyoruz
-          const dupeContent = (p.dupes || []).map(d => `${d.brand} ${d.code}`).join(' ');
-          const searchableText = normalizeText(`${p.name} ${p.brand} ${p.gender} ${dupeContent}`);
-
-          // Kullanıcının yazdığı her bir kelime bu metinde geçiyor mu kontrol ediyoruz
-          return queryTokens.every(token => searchableText.includes(token));
-        });
-      }
-
-      displayedCount = 15;
-      render();
     });
 
     
