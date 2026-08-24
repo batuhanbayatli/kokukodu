@@ -566,7 +566,7 @@
       listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Muadil kodları yükleniyor...</div>';
       try {
         
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=15`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
           method: 'GET',
           headers: {
             'apikey': SUPABASE_KEY,
