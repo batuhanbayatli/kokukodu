@@ -549,23 +549,69 @@
       <span>© 2026 Batuhan Bayatlı • İletişim</span>
     </a>
   </footer>
-
-  <script>
+<script>
     const SUPABASE_URL = 'https://wqzrwydjougseslvwype.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxenJ3eWRqb3Vnc2VzbHZ3eXBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NjY4MDEsImV4cCI6MjEwMzE0MjgwMX0.CFyfTGxAVBLo7CzeQJFQ7wNpNUA2pRxQj4Jj3zcdv5c';
 
-    const fallbackCoupons = [
-     
-    ];
-
+    const fallbackCoupons = [];
     let allPerfumes = [];
+
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
+
+    // Marka ve Parfüm Kısaltmaları Sözlüğü
+    const BRAND_ALIASES = {
+      'ysl': 'yves saint laurent',
+      'jpg': 'jean paul gaultier',
+      'dg': 'dolce gabbana',
+      'd&g': 'dolce gabbana',
+      'tf': 'tom ford',
+      'mfk': 'maison francis kurkdjian',
+      'lv': 'louis vuitton',
+      'vs': 'victorias secret',
+      'pdm': 'parfums de marly',
+      'mm': 'maison margiela',
+      'ch': 'carolina herrera',
+      'ck': 'calvin klein'
+    };
+
+    // Güvenli Muadil Verisi Çıkarıcı (JSON/Array Uyumlu)
+    function getSafeDupes(dupesData) {
+      if (!dupesData) return [];
+      if (Array.isArray(dupesData)) return dupesData;
+      if (typeof dupesData === 'string') {
+        try {
+          const parsed = JSON.parse(dupesData);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      return [];
+    }
+
+    // Metinleri toleranslı ve aramalara karşı esnek hale getiren fonksiyon
+    function normalizeText(text) {
+      if (!text) return '';
+      return String(text)
+        .toLocaleLowerCase('tr-TR')
+        .replace(/['’`´\-\.\,\/\(\)\:\&]/g, '')
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/é|è|ê|ë/g, 'e')
+        .replace(/â|à|ä/g, 'a')
+        .replace(/ô|ö/g, 'o')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
 
     async function loadData() {
       listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Muadil kodları yükleniyor...</div>';
       try {
-        
         const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
           method: 'GET',
           headers: {
@@ -591,7 +637,7 @@
       }
 
       items.forEach(p => {
-        const dupes = (p.dupes || []).sort((a,b) => {
+        const dupes = getSafeDupes(p.dupes).sort((a,b) => {
           const aSpon = a.is_featured || a.sponsored;
           const bSpon = b.is_featured || b.sponsored;
           return (bSpon ? 1 : 0) - (aSpon ? 1 : 0);
@@ -609,12 +655,12 @@
           return `
             <div class="dupe-item ${isSpon ? 'sponsored' : ''}">
               <div class="dupe-left">
-                <span class="dupe-brand-name">${d.brand}</span>
+                <span class="dupe-brand-name">${d.brand || ''}</span>
                 ${isSpon ? `<span class="sponsor-badge">👑 SPONSORLU</span>` : ''}
               </div>
               <div class="dupe-right">
-                <button class="code-btn" onclick="copyCode('${d.brand}', '${d.code}')" title="Kodu Kopyala">
-                  <span>${d.code}</span> 📋
+                <button class="code-btn" onclick="copyCode('${d.brand || ''}', '${d.code || ''}')" title="Kodu Kopyala">
+                  <span>${d.code || ''}</span> 📋
                 </button>
                 ${d.link ? `<a href="${d.link}" target="_blank" rel="noopener noreferrer" class="buy-link-btn">Satın Al ➔</a>` : ''}
               </div>
@@ -648,30 +694,32 @@
       const btn = document.getElementById(`btn-more-${perfumeId}`);
       if (!p || !grid) return;
 
-      const dupes = (p.dupes || []).sort((a,b) => {
+      const dupes = getSafeDupes(p.dupes).sort((a,b) => {
         const aSpon = a.is_featured || a.sponsored;
         const bSpon = b.is_featured || b.sponsored;
         return (bSpon ? 1 : 0) - (aSpon ? 1 : 0);
       });
 
-      grid.innerHTML = dupes.map(d => {
+      const hiddenDupes = dupes.slice(6);
+      const renderDupeHtml = (d) => {
         const isSpon = d.is_featured || d.sponsored;
         return `
           <div class="dupe-item ${isSpon ? 'sponsored' : ''}">
             <div class="dupe-left">
-              <span class="dupe-brand-name">${d.brand}</span>
+              <span class="dupe-brand-name">${d.brand || ''}</span>
               ${isSpon ? `<span class="sponsor-badge">👑 SPONSORLU</span>` : ''}
             </div>
             <div class="dupe-right">
-              <button class="code-btn" onclick="copyCode('${d.brand}', '${d.code}')" title="Kodu Kopyala">
-                <span>${d.code}</span> 📋
+              <button class="code-btn" onclick="copyCode('${d.brand || ''}', '${d.code || ''}')" title="Kodu Kopyala">
+                <span>${d.code || ''}</span> 📋
               </button>
               ${d.link ? `<a href="${d.link}" target="_blank" rel="noopener noreferrer" class="buy-link-btn">Satın Al ➔</a>` : ''}
             </div>
           </div>
         `;
-      }).join('');
+      };
 
+      grid.innerHTML += hiddenDupes.map(renderDupeHtml).join('');
       if (btn) btn.style.display = 'none';
     };
 
@@ -684,68 +732,7 @@
       });
     }
 
-// Marka ve Parfüm Kısaltmaları Sözlüğü
-    const BRAND_ALIASES = {
-      'ysl': 'yves saint laurent',
-      'jpg': 'jean paul gaultier',
-      'dg': 'dolce gabbana',
-      'd&g': 'dolce gabbana',
-      'tf': 'tom ford',
-      'mfk': 'maison francis kurkdjian',
-      'lv': 'louis vuitton',
-      'vs': 'victorias secret',
-      'pdm': 'parfums de marly',
-      'mm': 'maison margiela',
-      'ch': 'carolina herrera',
-      'ck': 'calvin klein'
-    };
-
-    // Marka ve Parfüm Kısaltmaları Sözlüğü
-    const BRAND_ALIASES = {
-      'ysl': 'yves saint laurent',
-      'jpg': 'jean paul gaultier',
-      'dg': 'dolce gabbana',
-      'd&g': 'dolce gabbana',
-      'tf': 'tom ford',
-      'mfk': 'maison francis kurkdjian',
-      'lv': 'louis vuitton',
-      'vs': 'victorias secret',
-      'pdm': 'parfums de marly',
-      'mm': 'maison margiela',
-      'ch': 'carolina herrera',
-      'ck': 'calvin klein'
-    };
-
-    // Güvenli Muadil Verisi Çıkarıcı (Hata önleyici)
-    function getSafeDupes(dupesData) {
-      if (!dupesData) return [];
-      if (Array.isArray(dupesData)) return dupesData;
-      if (typeof dupesData === 'string') {
-        try { return JSON.parse(dupesData); } catch (e) { return []; }
-      }
-      return [];
-    }
-
-    // Metinleri toleranslı ve aramalara karşı esnek hale getiren fonksiyon
-    function normalizeText(text) {
-      if (!text) return '';
-      return String(text)
-        .toLocaleLowerCase('tr-TR')
-        .replace(/['’`´\-\.\,\/\(\)\:\&]/g, '')
-        .replace(/ğ/g, 'g')
-        .replace(/ü/g, 'u')
-        .replace(/ş/g, 's')
-        .replace(/ı/g, 'i')
-        .replace(/ö/g, 'o')
-        .replace(/ç/g, 'c')
-        .replace(/é|è|ê|ë/g, 'e')
-        .replace(/â|à|ä/g, 'a')
-        .replace(/ô|ö/g, 'o')
-        .replace(/\s+/g, ' ')
-        .trim();
-    }
-
-    // Arama Dinleyicisi (Kısaltma Destekli)
+    // Arama Dinleyicisi
     searchInput.addEventListener('input', (e) => {
       const rawQuery = e.target.value;
       const normalizedQuery = normalizeText(rawQuery);
@@ -755,21 +742,16 @@
         return;
       }
 
-      // Kullanıcının yazdığı kelimeleri al ve kısaltmaları genişlet
       const rawTokens = normalizedQuery.split(' ').filter(t => t.length > 0);
       const queryTokens = rawTokens.map(token => BRAND_ALIASES[token] || token);
 
       const filtered = allPerfumes.filter(p => {
         const dupes = getSafeDupes(p.dupes);
         const dupeContent = dupes.map(d => `${d.brand || ''} ${d.code || ''}`).join(' ');
-        
-        // Marka ismini hem orijinaliyle hem de kısaltmasıyla arama metnine ekliyoruz
         const brandNormalized = normalizeText(p.brand || '');
         const searchableText = normalizeText(`${p.name || ''} ${p.brand || ''} ${brandNormalized} ${p.gender || ''} ${dupeContent}`);
 
-        // Arama terimlerinin hepsi kart içeriğinde geçiyor mu?
         return queryTokens.every(token => {
-          // Çok kelimeli kısaltma açılımları için (Örn: yves saint laurent)
           const subTokens = token.split(' ');
           return subTokens.every(sub => searchableText.includes(sub));
         });
@@ -778,12 +760,6 @@
       render(filtered);
     });
 
-
-
-
-    
-   
-    
     window.openCouponsModal = async function() {
       const container = document.getElementById('couponsContainer');
       container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">⏳ Kuponlar kontrol ediliyor...</div>';
@@ -834,11 +810,9 @@
     };
     window.closeCouponsModal = function() { document.getElementById('couponsModal').style.display = 'none'; };
 
-    
     window.openPartnerModal = function() { document.getElementById('partnerModal').style.display = 'flex'; };
     window.closePartnerModal = function() { document.getElementById('partnerModal').style.display = 'none'; };
 
-    
     const themeBtn = document.getElementById('themeBtn');
     const savedTheme = localStorage.getItem('kk_theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
@@ -854,5 +828,6 @@
 
     document.addEventListener('DOMContentLoaded', loadData);
   </script>
+  
 </body>
 </html>
