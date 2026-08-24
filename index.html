@@ -684,14 +684,47 @@
       });
     }
 
+    // Metinleri toleranslı hale getiren temizleme fonksiyonu
+    function normalizeText(text) {
+      if (!text) return '';
+      return text
+        .toLocaleLowerCase('tr-TR')
+        .replace(/['’`´\-\.\,\/]/g, '') // Kesme ve noktalama işaretlerini kaldırır
+        .replace(/ğ/g, 'g')
+        .replace(/ü/g, 'u')
+        .replace(/ş/g, 's')
+        .replace(/ı/g, 'i')
+        .replace(/ö/g, 'o')
+        .replace(/ç/g, 'c')
+        .replace(/é|è|ê|ë/g, 'e')
+        .replace(/â|à|ä/g, 'a')
+        .replace(/ô|ö/g, 'o')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
     searchInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = allPerfumes.filter(p => 
-        (p.name && p.name.toLowerCase().includes(q)) || 
-        (p.brand && p.brand.toLowerCase().includes(q)) ||
-        (p.dupes && p.dupes.some(d => (d.brand && d.brand.toLowerCase().includes(q)) || (d.code && d.code.toLowerCase().includes(q))))
-      );
-      render(filtered);
+      const rawQuery = e.target.value;
+      const normalizedQuery = normalizeText(rawQuery);
+
+      if (!normalizedQuery) {
+        currentFiltered = allPerfumes;
+      } else {
+        // Kullanıcının yazdığı tüm kelimeleri ayırıyoruz (Örn: ["victoria", "secret"])
+        const queryTokens = normalizedQuery.split(' ').filter(t => t.length > 0);
+
+        currentFiltered = allPerfumes.filter(p => {
+          // Karttaki tüm aranabilir alanları tek bir normalize metinde topluyoruz
+          const dupeContent = (p.dupes || []).map(d => `${d.brand} ${d.code}`).join(' ');
+          const searchableText = normalizeText(`${p.name} ${p.brand} ${p.gender} ${dupeContent}`);
+
+          // Kullanıcının yazdığı her bir kelime bu metinde geçiyor mu kontrol ediyoruz
+          return queryTokens.every(token => searchableText.includes(token));
+        });
+      }
+
+      displayedCount = 15;
+      render();
     });
 
     
