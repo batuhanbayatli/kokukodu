@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KOKU{KODU} — Hızlı Muadil Arama & Kuponlar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root[data-theme="light"] {
+      --bg: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 100%);
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-sub: rgba(248, 250, 252, 0.85);
+      --border: rgba(226, 232, 240, 0.9);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --gold: #b38031;
+      --gold-surface: rgba(179, 128, 49, 0.08);
+      --gold-border: rgba(179, 128, 49, 0.35);
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+      --modal-bg: #ffffff;
+    }
+
+    :root[data-theme="dark"] {
+      --bg: radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
+      --surface: rgba(15, 23, 42, 0.9);
+      --surface-sub: rgba(30, 41, 59, 0.75);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --gold: #d4a359;
+      --gold-surface: rgba(212, 163, 89, 0.12);
+      --gold-border: rgba(212, 163, 89, 0.35);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      --modal-bg: #0f172a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    body {
+      background: var(--bg);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 14px;
+      transition: background 0.3s ease, color 0.3s ease;
+      overflow-x: hidden;
+    }
+
+    .top-nav {
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .brand {
+      font-size: clamp(24px, 5vw, 32px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      cursor: pointer;
+    }
+    .brand span { color: var(--gold); }
+
+    .nav-actions { display: flex; align-items: center; gap: 8px; }
+
+    .coupon-glow-btn {
+      background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(255, 65, 108, 0.35);
+      animation: pulseAttention 2.5s infinite ease-in-out;
+      transition: transform 0.2s ease;
+    }
+    .coupon-glow-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(255, 65, 108, 0.5);
+    }
+
+    @keyframes pulseAttention {
+      0%, 100% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 65, 108, 0.35); }
+      50% { transform: scale(1.04); box-shadow: 0 6px 22px rgba(255, 65, 108, 0.6); }
+    }
+
+    .theme-toggle-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+    .theme-toggle-btn:hover { border-color: var(--gold-border); transform: scale(1.05); }
+
+    .tagline {
+      color: var(--text-muted);
+      font-size: clamp(12.5px, 2.5vw, 14px);
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 20px;
+      max-width: 580px;
+    }
+
+    .search-wrapper {
+      width: 100%;
+      max-width: 680px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 15px 20px;
+      padding-right: 48px;
+      font-size: 15px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: var(--text);
+      outline: none;
+      box-shadow: var(--shadow);
+      transition: all 0.25s ease;
+    }
+    .search-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 8px 30px var(--gold-surface);
+    }
+    .search-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--gold);
+      pointer-events: none;
+    }
+
+    /* İŞ BİRLİĞİ & REKLAM ÇAĞRI KARTI (ORTAK STİL) */
+    .partner-banner {
+      width: 100%;
+      max-width: 820px;
+      background: var(--gold-surface);
+      border: 1.5px dashed var(--gold-border);
+      border-radius: 20px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .partner-banner.bottom-banner {
+      margin-top: 24px;
+      margin-bottom: 0;
+    }
+    .partner-text { display: flex; flex-direction: column; gap: 2px; }
+    .partner-title { font-size: 14px; font-weight: 800; color: var(--gold); }
+    .partner-desc { font-size: 12px; color: var(--text-muted); }
+    .partner-action-btn {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .partner-action-btn:hover { transform: translateY(-1px); opacity: 0.95; }
+
+    .catalog-list {
+      width: 100%;
+      max-width: 820px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .perfume-card {
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .perf-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .perf-title-group h2 { font-size: 17.5px; font-weight: 800; color: var(--text); }
+    .perf-title-group span {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: var(--gold-surface);
+      padding: 2px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--gold-border);
+    }
+
+    .dupes-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 680px) {
+      .dupes-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    .dupe-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-sub);
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .dupe-item.sponsored {
+      background: var(--gold-surface);
+      border-color: var(--gold-border);
+    }
+
+    .dupe-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .dupe-brand-name {
+      white-space: nowrap;
+    }
+    .sponsor-badge {
+      background: var(--gold);
+      color: #000;
+      font-size: 8px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .dupe-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
+    .code-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 700;
+      background: var(--surface);
+      border: 1px dashed var(--gold-border);
+      color: var(--text);
+      padding: 5px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .code-btn:hover { background: var(--gold); color: #000; border-style: solid; }
+
+    .buy-link-btn {
+      background: var(--gold);
+      color: #000;
+      text-decoration: none;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .toggle-more-btn {
+      background: none;
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 4px;
+      transition: all 0.2s ease;
+    }
+    .toggle-more-btn:hover { color: var(--gold); border-color: var(--gold-border); }
+
+    /* MODALLAR (KUPON & İLETİŞİM) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-window {
+      background: var(--modal-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      padding: 22px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; }
+    .modal-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .modal-close { background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer; }
+
+    .coupons-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px; }
+    .coupon-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 12px;
+      gap: 8px;
+    }
+    .coupon-brand { font-weight: 800; font-size: 13px; }
+    .coupon-desc { font-size: 11px; color: var(--text-muted); }
+
+    .contact-channels { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .contact-opt-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--surface-sub);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    .contact-opt-btn:hover {
+      border-color: var(--gold-border);
+      background: var(--gold-surface);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+    .contact-opt-left { display: flex; align-items: center; gap: 10px; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 12.5px;
+      font-weight: 700;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* FOOTER */
+    footer {
+      margin-top: auto;
+      padding: 32px 0 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .footer-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+    .footer-link:hover { color: var(--gold); border-color: var(--gold-border); }
+    .linkedin-icon { width: 13px; height: 13px; fill: currentColor; }
+  </style>
+</head>
+<body>
+
+  <div class="top-nav">
+    <div class="brand" onclick="location.reload()">KOKU<span>{KODU}</span></div>
+    <div class="nav-actions">
+      <button class="coupon-glow-btn" onclick="openCouponsModal()">🎟️ Kuponlar</button>
+      <button class="theme-toggle-btn" id="themeBtn" aria-label="Tema Değiştir">🌙</button>
+    </div>
+  </div>
+
+  <p class="tagline">Lüks parfümlerin yerli muadil kodları ve hızlı yönlendirme arşivi.</p>
+
+  <div class="search-wrapper">
+    <input type="text" id="searchInput" class="search-input" placeholder="Parfüm adı veya muadil kodu ara (örn: Sauvage, Aventus, 561)...">
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <!-- ÜST TİCARİ İŞ BİRLİĞİ BANNERI -->
+  <div class="partner-banner">
+    <div class="partner-text">
+      <div class="partner-title">✨ Markanızı veya Muadil Kodlarınızı Öne Çıkarın</div>
+      <div class="partner-desc">Sponsorlu listeleme, marka kuponu ekleme veya ticari ortaklıklar için iletişime geçin.</div>
+    </div>
+    <button class="partner-action-btn" onclick="openPartnerModal()">İş Birliği Başlat ➔</button>
+  </div>
+
+  <!-- PARFÜM LİSTESİ -->
+  <main class="catalog-list" id="catalogList"></main>
+
+  <!-- ALT TİCARİ İŞ BİRLİĞİ BANNERI -->
+  <div class="partner-banner bottom-banner">
+    <div class="partner-text">
+      <div class="partner-title">💼 Koku Markanız İçin Satış Ortaklığı</div>
+      <div class="partner-desc">Her gün binlerce kullanıcıya doğrudan yönlendirme ve özel kupon alanı sağlayın.</div>
+    </div>
+    <button class="partner-action-btn" onclick="openPartnerModal()">Hemen Ulaşın ➔</button>
+  </div>
+
+  <div class="toast" id="toast">📋 Kod kopyalandı!</div>
+
+  <!-- İNDİRİM KODLARI MODALI -->
+  <div class="modal-overlay" id="couponsModal">
+    <div class="modal-window">
+      <div class="modal-head">
+        <div class="modal-title">🎟️ Güncel İndirim Kuponları</div>
+        <button class="modal-close" onclick="closeCouponsModal()">&times;</button>
+      </div>
+      <div class="coupons-list" id="couponsContainer"></div>
+    </div>
+  </div>
+
+  <!-- İŞ BİRLİĞİ & İLETİŞİM SEÇİM MODALI -->
+  <div class="modal-overlay" id="partnerModal">
+    <div class="modal-window">
+      <div class="modal-head">
+        <div class="modal-title">💼 Ticari İş Birlikleri & Sponsorluk</div>
+        <button class="modal-close" onclick="closePartnerModal()">&times;</button>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5;">
+        KOKU{KODU} platformunda markanızı en tepeye sabitlemek, satın alma linklerinizi entegre etmek veya özel kupon tanımlamak için tercih ettiğiniz kanaldan hemen ulaşabilirsiniz:
+      </p>
+      <div class="contact-channels">
+        <a href="https://www.linkedin.com/in/batuhanbayatl%C4%B1" target="_blank" rel="noopener noreferrer" class="contact-opt-btn">
+          <div class="contact-opt-left">
+            <svg class="linkedin-icon" style="width:18px;height:18px;" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 0 0 1.45-1.45 1.45 1.45 0 0 0-1.45-1.45 1.45 1.45 0 0 0-1.45 1.45c0 .8.65 1.45 1.45 1.45m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+            <span>LinkedIn Üzerinden İletişim</span>
+          </div>
+          <span>➔</span>
+        </a>
+        <a href="mailto:batuhanbayatli@gmail.com?subject=KokuKodu%20Ticari%20İş%20Birliği%20Talebi" class="contact-opt-btn">
+          <div class="contact-opt-left">
+            <span style="font-size: 16px;">✉️</span>
+            <span>E-Posta Gönder (batuhanbayatli@gmail.com)</span>
+          </div>
+          <span>➔</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="https://www.linkedin.com/in/batuhanbayatl%C4%B1" target="_blank" rel="noopener noreferrer" class="footer-link">
+      <svg class="linkedin-icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 0 0 1.45-1.45 1.45 1.45 0 0 0-1.45-1.45 1.45 1.45 0 0 0-1.45 1.45c0 .8.65 1.45 1.45 1.45m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+      <span>© 2026 Batuhan Bayatlı • İletişim</span>
+    </a>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = 'https://wqzrwydjougseslvwype.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxenJ3eWRqb3Vnc2VzbHZ3eXBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NjY4MDEsImV4cCI6MjEwMzE0MjgwMX0.CFyfTGxAVBLo7CzeQJFQ7wNpNUA2pRxQj4Jj3zcdv5c';
+
+    const fallbackCoupons = [
+      { brand: "Bargello", code: "KOKU10", description: "Tüm siparişlerde geçerli net %10 indirim" },
+      { brand: "Mad Parfüm", code: "MAD2026", description: "2. ürüne özel sepette ekstra %20 indirim" },
+      { brand: "Muscent", code: "GURME5", description: "Seçili niş koleksiyonlarda %5 indirim" },
+      { brand: "David Walker", code: "DWFREE", description: "Tüm sepetlerde ücretsiz kargo" }
+    ];
+
+    let allPerfumes = [];
+    const listEl = document.getElementById('catalogList');
+    const searchInput = document.getElementById('searchInput');
+
+    async function loadData() {
+      listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Muadil kodları yükleniyor...</div>';
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc`, {
+          method: 'GET',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!res.ok) throw new Error('Veri çekilemedi.');
+        allPerfumes = await res.json();
+        render(allPerfumes);
+      } catch (err) {
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;">Veriler yüklenirken bir sorun oluştu.</div>';
+      }
+    }
+
+    function render(items) {
+      listEl.innerHTML = '';
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;">Aradığınız kriterde parfüm veya muadil kodu bulunamadı.</div>';
+        return;
+      }
+
+      items.forEach(p => {
+        const dupes = (p.dupes || []).sort((a,b) => {
+          const aSpon = a.is_featured || a.sponsored;
+          const bSpon = b.is_featured || b.sponsored;
+          return (bSpon ? 1 : 0) - (aSpon ? 1 : 0);
+        });
+
+        const initialLimit = 6;
+        const visibleDupes = dupes.slice(0, initialLimit);
+        const hiddenDupes = dupes.slice(initialLimit);
+
+        const card = document.createElement('div');
+        card.className = 'perfume-card';
+
+        const renderDupeHtml = (d) => {
+          const isSpon = d.is_featured || d.sponsored;
+          return `
+            <div class="dupe-item ${isSpon ? 'sponsored' : ''}">
+              <div class="dupe-left">
+                <span class="dupe-brand-name">${d.brand}</span>
+                ${isSpon ? `<span class="sponsor-badge">👑 SPONSORLU</span>` : ''}
+              </div>
+              <div class="dupe-right">
+                <button class="code-btn" onclick="copyCode('${d.brand}', '${d.code}')" title="Kodu Kopyala">
+                  <span>${d.code}</span> 📋
+                </button>
+                ${d.link ? `<a href="${d.link}" target="_blank" rel="noopener noreferrer" class="buy-link-btn">Satın Al ➔</a>` : ''}
+              </div>
+            </div>
+          `;
+        };
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="perf-title-group">
+              <h2>${p.name}</h2>
+              <span>${p.brand} • ${p.gender}</span>
+            </div>
+          </div>
+          <div class="dupes-grid" id="grid-${p.id}">
+            ${visibleDupes.map(renderDupeHtml).join('')}
+          </div>
+          ${hiddenDupes.length > 0 ? `
+            <button class="toggle-more-btn" onclick="toggleMoreDupes('${p.id}')" id="btn-more-${p.id}">
+              +${hiddenDupes.length} Farklı Muadil Markasını Göster
+            </button>
+          ` : ''}
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    window.toggleMoreDupes = function(perfumeId) {
+      const p = allPerfumes.find(x => x.id === perfumeId);
+      const grid = document.getElementById(`grid-${perfumeId}`);
+      const btn = document.getElementById(`btn-more-${perfumeId}`);
+      if (!p || !grid) return;
+
+      const dupes = (p.dupes || []).sort((a,b) => {
+        const aSpon = a.is_featured || a.sponsored;
+        const bSpon = b.is_featured || b.sponsored;
+        return (bSpon ? 1 : 0) - (aSpon ? 1 : 0);
+      });
+
+      grid.innerHTML = dupes.map(d => {
+        const isSpon = d.is_featured || d.sponsored;
+        return `
+          <div class="dupe-item ${isSpon ? 'sponsored' : ''}">
+            <div class="dupe-left">
+              <span class="dupe-brand-name">${d.brand}</span>
+              ${isSpon ? `<span class="sponsor-badge">👑 SPONSORLU</span>` : ''}
+            </div>
+            <div class="dupe-right">
+              <button class="code-btn" onclick="copyCode('${d.brand}', '${d.code}')" title="Kodu Kopyala">
+                <span>${d.code}</span> 📋
+              </button>
+              ${d.link ? `<a href="${d.link}" target="_blank" rel="noopener noreferrer" class="buy-link-btn">Satın Al ➔</a>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (btn) btn.style.display = 'none';
+    };
+
+    function copyCode(brand, code) {
+      navigator.clipboard.writeText(code).then(() => {
+        const t = document.getElementById('toast');
+        t.innerText = `✨ ${brand} [${code}] kopyalandı!`;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+      });
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = allPerfumes.filter(p => 
+        (p.name && p.name.toLowerCase().includes(q)) || 
+        (p.brand && p.brand.toLowerCase().includes(q)) ||
+        (p.dupes && p.dupes.some(d => (d.brand && d.brand.toLowerCase().includes(q)) || (d.code && d.code.toLowerCase().includes(q))))
+      );
+      render(filtered);
+    });
+
+    // KUPONLAR MODAL
+    window.openCouponsModal = async function() {
+      const container = document.getElementById('couponsContainer');
+      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">⏳ Kuponlar kontrol ediliyor...</div>';
+      document.getElementById('couponsModal').style.display = 'flex';
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/coupons?select=*&is_active=eq.true&order=created_at.desc`, {
+          method: 'GET',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        let coupons = [];
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) coupons = data;
+        }
+
+        if (coupons.length === 0) coupons = fallbackCoupons;
+
+        container.innerHTML = coupons.map(c => `
+          <div class="coupon-card">
+            <div>
+              <div class="coupon-brand">${c.brand}</div>
+              <div class="coupon-desc">${c.description || c.desc}</div>
+            </div>
+            <button class="code-btn" onclick="copyCode('${c.brand}', '${c.code}')">
+              <span>${c.code}</span> 📋
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = fallbackCoupons.map(c => `
+          <div class="coupon-card">
+            <div>
+              <div class="coupon-brand">${c.brand}</div>
+              <div class="coupon-desc">${c.desc}</div>
+            </div>
+            <button class="code-btn" onclick="copyCode('${c.brand}', '${c.code}')">
+              <span>${c.code}</span> 📋
+            </button>
+          </div>
+        `).join('');
+      }
+    };
+    window.closeCouponsModal = function() { document.getElementById('couponsModal').style.display = 'none'; };
+
+    // İŞ BİRLİĞİ MODAL
+    window.openPartnerModal = function() { document.getElementById('partnerModal').style.display = 'flex'; };
+    window.closePartnerModal = function() { document.getElementById('partnerModal').style.display = 'none'; };
+
+    // TEMA DEĞİŞTİRİCİ
+    const themeBtn = document.getElementById('themeBtn');
+    const savedTheme = localStorage.getItem('kk_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const target = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      localStorage.setItem('kk_theme', target);
+      themeBtn.innerText = target === 'dark' ? '☀️' : '🌙';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
