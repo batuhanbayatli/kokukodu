@@ -700,6 +700,32 @@
       'ck': 'calvin klein'
     };
 
+    // Marka ve Parfüm Kısaltmaları Sözlüğü
+    const BRAND_ALIASES = {
+      'ysl': 'yves saint laurent',
+      'jpg': 'jean paul gaultier',
+      'dg': 'dolce gabbana',
+      'd&g': 'dolce gabbana',
+      'tf': 'tom ford',
+      'mfk': 'maison francis kurkdjian',
+      'lv': 'louis vuitton',
+      'vs': 'victorias secret',
+      'pdm': 'parfums de marly',
+      'mm': 'maison margiela',
+      'ch': 'carolina herrera',
+      'ck': 'calvin klein'
+    };
+
+    // Güvenli Muadil Verisi Çıkarıcı (Hata önleyici)
+    function getSafeDupes(dupesData) {
+      if (!dupesData) return [];
+      if (Array.isArray(dupesData)) return dupesData;
+      if (typeof dupesData === 'string') {
+        try { return JSON.parse(dupesData); } catch (e) { return []; }
+      }
+      return [];
+    }
+
     // Metinleri toleranslı ve aramalara karşı esnek hale getiren fonksiyon
     function normalizeText(text) {
       if (!text) return '';
@@ -751,7 +777,6 @@
 
       render(filtered);
     });
-
 
 
 
