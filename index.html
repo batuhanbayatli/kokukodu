@@ -559,7 +559,7 @@
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
 
-    // Marka ve Parfüm Kısaltmaları Sözlüğü
+    
     const BRAND_ALIASES = {
       'ysl': 'yves saint laurent',
       'jpg': 'jean paul gaultier',
@@ -575,7 +575,7 @@
       'ck': 'calvin klein'
     };
 
-    // Güvenli Muadil Verisi Çıkarıcı (JSON/Array Uyumlu)
+    
     function getSafeDupes(dupesData) {
       if (!dupesData) return [];
       if (Array.isArray(dupesData)) return dupesData;
@@ -590,7 +590,7 @@
       return [];
     }
 
-    // Metinleri toleranslı ve aramalara karşı esnek hale getiren fonksiyon
+    
     function normalizeText(text) {
       if (!text) return '';
       return String(text)
