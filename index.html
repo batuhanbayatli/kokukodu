@@ -689,7 +689,7 @@
       if (!text) return '';
       return text
         .toLocaleLowerCase('tr-TR')
-        .replace(/['’`´\-\.\,\/]/g, '') // Kesme ve noktalama işaretlerini kaldırır
+        .replace(/['’`´\-\.\,\/\(\)]/g, '') // Kesme ve noktalama işaretlerini kaldırır
         .replace(/ğ/g, 'g')
         .replace(/ü/g, 'u')
         .replace(/ş/g, 's')
@@ -698,10 +698,33 @@
         .replace(/ç/g, 'c')
         .replace(/é|è|ê|ë/g, 'e')
         .replace(/â|à|ä/g, 'a')
-        .replace(/ô|ö/g, 'o')
-        .replace(/\s+/g, ' ')
+        .replace(/ô/g, 'o')
         .trim();
     }
+
+    searchInput.addEventListener('input', (e) => {
+      const rawQuery = e.target.value;
+      const normalizedQuery = normalizeText(rawQuery);
+
+      if (!normalizedQuery) {
+        render(allPerfumes);
+        return;
+      }
+
+      // Kullanıcının yazdığı her kelimeyi ayır (Örn: "victoria" ve "secret")
+      const queryTokens = normalizedQuery.split(/\s+/).filter(t => t.length > 0);
+
+      const filtered = allPerfumes.filter(p => {
+        // Parfümün adı, markası, cinsiyeti ve içindeki tüm muadil kodlarını tek bir metin yapıyoruz
+        const dupeContent = (p.dupes || []).map(d => `${d.brand} ${d.code}`).join(' ');
+        const searchableText = normalizeText(`${p.name} ${p.brand} ${p.gender} ${dupeContent}`);
+
+        // Yazılan tüm kelimeler bu kartın içinde var mı? (Sırası hiç fark etmez)
+        return queryTokens.every(token => searchableText.includes(token));
+      });
+
+      render(filtered);
+    });
 
     searchInput.addEventListener('input', (e) => {
       const rawQuery = e.target.value;
