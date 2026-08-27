@@ -841,8 +841,6 @@
         return;
       }
 
-      const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-
       items.forEach(p => {
         const dupes = getSafeDupes(p.dupes).sort((a,b) => {
           const aSpon = a.is_featured || a.sponsored;
@@ -854,18 +852,14 @@
         const visibleDupes = dupes.slice(0, initialLimit);
         const hiddenDupes = dupes.slice(initialLimit);
 
-        // Arama Değişkenleri
-        const cleanBrand = (p.brand || '').trim();
-        const cleanName = (p.name || '').trim();
-        const searchPhrase = `${cleanBrand} ${cleanName} inceleme`.trim();
-        const encodedSearch = encodeURIComponent(searchPhrase);
+        // TikTok Tag Linki (Mobilde uyarı vermez, webde doğrudan video listesini açar)
+        const tagQuery = `${p.brand || ''}${p.name || ''}`
+          .replace(/[^a-zA-Z0-9]/g, '')
+          .toLowerCase();
+        const tiktokWebUrl = `https://www.tiktok.com/tag/${tagQuery}`;
 
-        // Mobilde doğrudan TikTok uygulamasının arama ekranını fırlatan derin bağlantı (Deep Link)
-        const tiktokHref = isMobileDevice 
-          ? `snssdk1128://search/result/?keyword=${encodedSearch}`
-          : `https://www.tiktok.com/search?q=${encodedSearch}`;
-
-        const fragranticaQuery = encodeURIComponent(`${cleanBrand} ${cleanName}`);
+        // Fragrantica Linki
+        const fragranticaQuery = encodeURIComponent(`${p.brand || ''} ${p.name || ''}`.trim());
         const fragranticaUrl = `https://www.fragrantica.com/search/?query=${fragranticaQuery}`;
 
         const card = document.createElement('div');
@@ -900,7 +894,7 @@
                 <img src="fragrantica.png" alt="Fragrantica" style="width:12px; height:12px; object-fit:contain;" onerror="this.style.display='none'">
                 <span>Fragrantica</span>
               </a>
-              <a href="${tiktokHref}" ${!isMobileDevice ? 'target="_blank" rel="noopener noreferrer"' : ''} class="tiktok-search-btn tiktok-btn" title="TikTok'ta kullanıcı incelemelerini izle">
+              <a href="${tiktokWebUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn tiktok-btn" title="TikTok'ta kullanıcı incelemelerini izle">
                 <svg class="tiktok-icon-svg" viewBox="0 0 448 512">
                   <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
                 </svg>
