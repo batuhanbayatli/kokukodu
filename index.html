@@ -829,14 +829,31 @@
       }
     }
 
-  /* MOBİL VE MASAÜSTÜ İÇİN %100 ÇALIŞAN TIKTOK VİDEO ARAMASI */
+  /* DOĞRUDAN UYGULAMA İÇİ ARAMAYI TETİKLEYEN FONKSİYON */
     window.openTikTokSearch = function(queryText) {
       const cleanQuery = queryText.replace(/['"]/g, '').trim();
-      
-      // Google üzerinden doğrudan TikTok video indeksini aratır (Mobil web engeline takılmaz)
-      const targetUrl = `https://www.google.com/search?q=${encodeURIComponent('site:tiktok.com ' + cleanQuery)}`;
-      
-      window.open(targetUrl, '_blank');
+      const encodedQuery = encodeURIComponent(cleanQuery);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // Doğrudan TikTok uygulamasının arama motorunu tetikler
+        const appDeepLink = `snssdk1128://search?keyword=${encodedQuery}`;
+        const fallbackUrl = `https://www.google.com/search?q=${encodeURIComponent('site:tiktok.com ' + cleanQuery)}`;
+
+        // Uygulamayı tetikle
+        window.location.href = appDeepLink;
+
+        // Uygulama yüklü değilse 1 saniye sonra yedek aramaya yönlendir
+        const start = Date.now();
+        setTimeout(() => {
+          if (Date.now() - start < 1500) {
+            window.location.href = fallbackUrl;
+          }
+        }, 1000);
+      } else {
+        // Masaüstünde doğrudan web araması
+        window.open(`https://www.tiktok.com/search?q=${encodedQuery}`, '_blank');
+      }
     };
 
     function render(items) {
