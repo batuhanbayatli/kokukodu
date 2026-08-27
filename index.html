@@ -258,8 +258,10 @@
     .card-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
+      gap: 8px;
     }
     .perf-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
     .perf-title-group h2 { font-size: 17.5px; font-weight: 800; color: var(--text); }
@@ -273,6 +275,34 @@
       padding: 2px 7px;
       border-radius: 6px;
       border: 1px solid var(--gold-border);
+    }
+
+    /* TikTok İnceleme Butonu */
+    .tiktok-search-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--surface-sub);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 8px;
+      text-decoration: none;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .tiktok-search-btn:hover {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
+      transform: translateY(-1px);
+    }
+    .tiktok-icon-svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
     }
 
     .dupes-grid {
@@ -399,6 +429,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      position: relative;
     }
     .modal-head { display: flex; justify-content: space-between; align-items: center; }
     .modal-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
@@ -440,6 +471,107 @@
       transform: translateY(-1px);
     }
     .contact-opt-left { display: flex; align-items: center; gap: 10px; }
+
+    /* Akıllı & Responsive Reklam Popup Stili */
+    .popup-ad-window {
+      max-width: 420px;
+      width: 100%;
+      border: 1.5px solid var(--gold-border);
+      background: var(--surface);
+      text-align: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.3);
+    }
+    .popup-ad-close {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+    }
+    .popup-ad-close:hover {
+      background: rgba(0, 0, 0, 0.85);
+      transform: scale(1.08);
+    }
+    .popup-ad-img-wrapper {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 4px;
+      background: rgba(0, 0, 0, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-ad-img {
+      width: 100%;
+      max-height: 280px;      /* Mobilde ekranı taşmayacak maksimum yükseklik */
+      height: auto;           /* Oranını bozmadan doğal yüksekliğini korur */
+      object-fit: contain;    /* Resmi asla KESMEZ, kutunun içine TAM SIĞDIRIR */
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .popup-ad-img:hover {
+      transform: scale(1.02);
+    }
+    .popup-ad-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      background: var(--gold-surface);
+      color: var(--gold);
+      border: 1px solid var(--gold-border);
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .popup-ad-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .popup-ad-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+    .popup-ad-btn {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a359 100%);
+      color: #000;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      padding: 11px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 4px 15px var(--gold-surface);
+      transition: transform 0.2s ease;
+    }
+    .popup-ad-btn:hover {
+      transform: translateY(-2px);
+    }
 
     .toast {
       position: fixed;
@@ -510,7 +642,7 @@
     <button class="partner-action-btn" onclick="openPartnerModal()">İş Birliği Başlat ➔</button>
   </div>
 
-  <!-- Katalog Alanı (İlk açılışta boş/hazır bekler) -->
+  <!-- Katalog Alanı (İlk açılışta hazır bekler) -->
   <main class="catalog-list" id="catalogList"></main>
 
   <div class="partner-banner bottom-banner">
@@ -523,6 +655,7 @@
 
   <div class="toast" id="toast">📋 Kod kopyalandı!</div>
 
+  <!-- Kuponlar Modalı -->
   <div class="modal-overlay" id="couponsModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -533,6 +666,7 @@
     </div>
   </div>
 
+  <!-- İş Birliği Modalı -->
   <div class="modal-overlay" id="partnerModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -561,6 +695,11 @@
     </div>
   </div>
 
+  <!-- AÇILIŞ REKLAM / DUYURU POPUP'I (Responsive & Modüler) -->
+  <div class="modal-overlay" id="adPopupModal">
+    <div class="modal-window popup-ad-window" id="adPopupContainer"></div>
+  </div>
+
   <footer>
     <a href="https://www.linkedin.com/in/batuhanbayatl%C4%B1" target="_blank" rel="noopener noreferrer" class="footer-link">
       <svg class="linkedin-icon" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.45 1.45 0 0 0 1.45-1.45 1.45 1.45 0 0 0-1.45-1.45 1.45 1.45 0 0 0-1.45 1.45c0 .8.65 1.45 1.45 1.45m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
@@ -571,6 +710,19 @@
   <script>
     const SUPABASE_URL = 'https://wqzrwydjougseslvwype.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxenJ3eWRqb3Vnc2VzbHZ3eXBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NjY4MDEsImV4cCI6MjEwMzE0MjgwMX0.CFyfTGxAVBLo7CzeQJFQ7wNpNUA2pRxQj4Jj3zcdv5c';
+
+    /* =========================================================
+       REKLAM / POPUP KONTROL PANELİ
+       ========================================================= */
+    const SHOW_POPUP_AD = true; // <-- true yaparsan açılışta reklam çıkar!
+    const POPUP_CONFIG = {
+      image: 'https://m.media-amazon.com/images/M/MV5BY2EzMmViMWYtNjQxNi00YzhkLWE4NTMtMDIyODI2ZTJjODA0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', 
+      badge: '',
+      title: '', 
+      desc: '', 
+      buttonText: 'Kodu Gör & Satın Al ➔',
+      targetUrl: 'https://kokukodu.com'
+    };
 
     const fallbackCoupons = [];
     let allPerfumes = [];
@@ -638,9 +790,10 @@
       `;
     }
 
-    // Sessiz Yükleme: Arka planda çeker, DOM'u kirletmez
     async function loadData() {
       showInitialPlaceholder();
+      checkAndShowAd(); // Popup kontrolü
+
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
           method: 'GET',
@@ -655,7 +808,6 @@
         allPerfumes = await res.json();
         isDataReady = true;
 
-        // Kullanıcı veri inerken zaten bir şey yazdıysa aramayı anında çalıştır
         if (searchInput.value.trim().length >= 2) {
           handleSearch(searchInput.value);
         }
@@ -688,6 +840,10 @@
         const visibleDupes = dupes.slice(0, initialLimit);
         const hiddenDupes = dupes.slice(initialLimit);
 
+        // TikTok Arama Linki (Parfüm Adı + "inceleme")
+        const tiktokQuery = encodeURIComponent(`${p.brand} ${p.name} inceleme`);
+        const tiktokUrl = `https://www.tiktok.com/search?q=${tiktokQuery}`;
+
         const card = document.createElement('div');
         card.className = 'perfume-card';
 
@@ -715,6 +871,12 @@
               <h2>${p.name}</h2>
               <span>${p.brand} • ${p.gender}</span>
             </div>
+            <a href="${tiktokUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn" title="TikTok'ta kullanıcı incelemelerini izle">
+              <svg class="tiktok-icon-svg" viewBox="0 0 448 512">
+                <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+              </svg>
+              <span>TikTok'ta İncele</span>
+            </a>
           </div>
           <div class="dupes-grid" id="grid-${p.id}">
             ${visibleDupes.map(renderDupeHtml).join('')}
@@ -776,7 +938,6 @@
     function handleSearch(rawVal) {
       const normalizedQuery = normalizeText(rawVal);
 
-      // Arama boşsa veya 2 harften azsa ekranı temiz tut
       if (!normalizedQuery || normalizedQuery.length < 2) {
         showInitialPlaceholder();
         return;
@@ -808,6 +969,45 @@
     searchInput.addEventListener('input', (e) => {
       handleSearch(e.target.value);
     });
+
+    // Açılış Reklam Popup Fonksiyonu (Dinamik İçerik)
+    function checkAndShowAd() {
+      if (!SHOW_POPUP_AD) return;
+
+      const container = document.getElementById('adPopupContainer');
+      const hasImage = Boolean(POPUP_CONFIG.image && POPUP_CONFIG.image.trim().length > 0);
+      const hasText = Boolean(POPUP_CONFIG.title || POPUP_CONFIG.desc || POPUP_CONFIG.badge);
+
+      container.innerHTML = `
+        <button class="popup-ad-close" onclick="closeAdPopup()" title="Kapat">&times;</button>
+        
+        ${hasImage ? `
+          <a href="${POPUP_CONFIG.targetUrl}" target="_blank" rel="noopener noreferrer" class="popup-ad-img-wrapper">
+            <img src="${POPUP_CONFIG.image}" alt="Kampanya" class="popup-ad-img" loading="lazy">
+          </a>
+        ` : ''}
+
+        ${hasText ? `
+          <div>
+            ${POPUP_CONFIG.badge ? `<span class="popup-ad-badge">${POPUP_CONFIG.badge}</span>` : ''}
+            ${POPUP_CONFIG.title ? `<h3 class="popup-ad-title">${POPUP_CONFIG.title}</h3>` : ''}
+            ${POPUP_CONFIG.desc ? `<p class="popup-ad-desc">${POPUP_CONFIG.desc}</p>` : ''}
+          </div>
+        ` : ''}
+
+        <a href="${POPUP_CONFIG.targetUrl}" target="_blank" rel="noopener noreferrer" class="popup-ad-btn">
+          ${POPUP_CONFIG.buttonText || 'Fırsatı İncele ➔'}
+        </a>
+      `;
+
+      setTimeout(() => {
+        document.getElementById('adPopupModal').style.display = 'flex';
+      }, 600);
+    }
+
+    window.closeAdPopup = function() {
+      document.getElementById('adPopupModal').style.display = 'none';
+    };
 
     window.openCouponsModal = async function() {
       const container = document.getElementById('couponsContainer');
