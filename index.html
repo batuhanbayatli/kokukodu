@@ -262,6 +262,7 @@
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
       gap: 8px;
+      flex-wrap: wrap;
     }
     .perf-title-group { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
     .perf-title-group h2 { font-size: 17.5px; font-weight: 800; color: var(--text); }
@@ -277,7 +278,13 @@
       border: 1px solid var(--gold-border);
     }
 
-    /* TikTok İnceleme Butonu */
+    .header-links-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
     .tiktok-search-btn {
       display: inline-flex;
       align-items: center;
@@ -294,10 +301,15 @@
       transition: all 0.2s ease;
     }
     .tiktok-search-btn:hover {
+      background: var(--gold-surface);
+      color: var(--gold);
+      border-color: var(--gold-border);
+      transform: translateY(-1px);
+    }
+    .tiktok-search-btn.tiktok-btn:hover {
       background: #000000;
       color: #ffffff;
       border-color: #000000;
-      transform: translateY(-1px);
     }
     .tiktok-icon-svg {
       width: 12px;
@@ -472,7 +484,7 @@
     }
     .contact-opt-left { display: flex; align-items: center; gap: 10px; }
 
-    /* Akıllı & Responsive Reklam Popup Stili */
+    /* Akıllı Reklam Popup Stili */
     .popup-ad-window {
       max-width: 420px;
       width: 100%;
@@ -522,9 +534,9 @@
     }
     .popup-ad-img {
       width: 100%;
-      max-height: 280px;      /* Mobilde ekranı taşmayacak maksimum yükseklik */
-      height: auto;           /* Oranını bozmadan doğal yüksekliğini korur */
-      object-fit: contain;    /* Resmi asla KESMEZ, kutunun içine TAM SIĞDIRIR */
+      max-height: 280px;
+      height: auto;
+      object-fit: contain;
       display: block;
       transition: transform 0.3s ease;
     }
@@ -642,7 +654,7 @@
     <button class="partner-action-btn" onclick="openPartnerModal()">İş Birliği Başlat ➔</button>
   </div>
 
-  <!-- Katalog Alanı (İlk açılışta hazır bekler) -->
+  <!-- Katalog Alanı -->
   <main class="catalog-list" id="catalogList"></main>
 
   <div class="partner-banner bottom-banner">
@@ -695,7 +707,7 @@
     </div>
   </div>
 
-  <!-- AÇILIŞ REKLAM / DUYURU POPUP'I (Responsive & Modüler) -->
+  <!-- Reklam Popup Modalı -->
   <div class="modal-overlay" id="adPopupModal">
     <div class="modal-window popup-ad-window" id="adPopupContainer"></div>
   </div>
@@ -714,12 +726,12 @@
     /* =========================================================
        REKLAM / POPUP KONTROL PANELİ
        ========================================================= */
-    const SHOW_POPUP_AD = false; // <-- true yaparsan açılışta reklam çıkar!
+    const SHOW_POPUP_AD = true;
     const POPUP_CONFIG = {
-      image: 'https://m.media-amazon.com/images/M/MV5BY2EzMmViMWYtNjQxNi00YzhkLWE4NTMtMDIyODI2ZTJjODA0XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg', 
-      badge: '',
-      title: '', 
-      desc: '', 
+      image: '', 
+      badge: '🔥 ÖZEL İŞ BİRLİĞİ',
+      title: 'Mad Parfüm & KokuKodu',
+      desc: 'Seçili niche muadil serilerinde geçerli indirim kodunuz hazır.',
       buttonText: 'Kodu Gör & Satın Al ➔',
       targetUrl: 'https://kokukodu.com'
     };
@@ -792,7 +804,7 @@
 
     async function loadData() {
       showInitialPlaceholder();
-      checkAndShowAd(); // Popup kontrolü
+      checkAndShowAd();
 
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
@@ -840,9 +852,11 @@
         const visibleDupes = dupes.slice(0, initialLimit);
         const hiddenDupes = dupes.slice(initialLimit);
 
-        // TikTok Arama Linki (Parfüm Adı + "inceleme")
         const tiktokQuery = encodeURIComponent(`${p.brand} ${p.name} inceleme`);
         const tiktokUrl = `https://www.tiktok.com/search?q=${tiktokQuery}`;
+
+        const fragranticaQuery = encodeURIComponent(`${p.brand} ${p.name}`);
+        const fragranticaUrl = `https://www.fragrantica.com/search/?query=${fragranticaQuery}`;
 
         const card = document.createElement('div');
         card.className = 'perfume-card';
@@ -871,12 +885,18 @@
               <h2>${p.name}</h2>
               <span>${p.brand} • ${p.gender}</span>
             </div>
-            <a href="${tiktokUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn" title="TikTok'ta kullanıcı incelemelerini izle">
-              <svg class="tiktok-icon-svg" viewBox="0 0 448 512">
-                <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
-              </svg>
-              <span>TikTok'ta İncele</span>
-            </a>
+            <div class="header-links-group">
+              <a href="${fragranticaUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn" title="Fragrantica'da koku notalarını ve yorumları incele">
+                <img src="fragrantica.png" alt="Fragrantica" style="width:12px; height:12px; object-fit:contain;" onerror="this.style.display='none'">
+                <span>Fragrantica</span>
+              </a>
+              <a href="${tiktokUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn tiktok-btn" title="TikTok'ta kullanıcı incelemelerini izle">
+                <svg class="tiktok-icon-svg" viewBox="0 0 448 512">
+                  <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+                </svg>
+                <span>TikTok</span>
+              </a>
+            </div>
           </div>
           <div class="dupes-grid" id="grid-${p.id}">
             ${visibleDupes.map(renderDupeHtml).join('')}
@@ -970,7 +990,6 @@
       handleSearch(e.target.value);
     });
 
-    // Açılış Reklam Popup Fonksiyonu (Dinamik İçerik)
     function checkAndShowAd() {
       if (!SHOW_POPUP_AD) return;
 
