@@ -5,20 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KOKU{KODU} — Hızlı Muadil Arama & Kuponlar</title>
 
+  <meta name="description" content="Lüks parfümlerin en güncel Bargello, Mad Parfüm, Muscent ve David Walker açık parfüm muadil kodları arşivi. Hızlı koku kodu sorgulama ve indirim kuponları.">
+  <meta name="keywords" content="parfüm muadil kodları, açık parfüm kodları, bargello kodları, mad parfüm kodları, muscent kodları, david walker kodları, koku kodu, parfüm muadilleri">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Batuhan Bayatlı">
 
-<meta name="description" content="Lüks parfümlerin en güncel Bargello, Mad Parfüm, Muscent ve David Walker açık parfüm muadil kodları arşivi. Hızlı koku kodu sorgulama ve indirim kuponları.">
-<meta name="keywords" content="parfüm muadil kodları, açık parfüm kodları, bargello kodları, mad parfüm kodları, muscent kodları, david walker kodları, koku kodu, parfüm muadilleri">
-<meta name="robots" content="index, follow">
-<meta name="author" content="Batuhan Bayatlı">
+  <meta property="og:title" content="KOKU{KODU} — Hızlı Muadil Parfüm Kodları & Kuponlar">
+  <meta property="og:description" content="Tüm lüks parfümlerin yerli açık parfüm muadil kodlarını anında sorgulayın ve güncel indirim kuponlarına ulaşın.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kokukodu.com">
 
-
-<meta property="og:title" content="KOKU{KODU} — Hızlı Muadil Parfüm Kodları & Kuponlar">
-<meta property="og:description" content="Tüm lüks parfümlerin yerli açık parfüm muadil kodlarını anında sorgulayın ve güncel indirim kuponlarına ulaşın.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kokukodu.com">
-
-
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -172,7 +168,6 @@
       pointer-events: none;
     }
 
-    
     .partner-banner {
       width: 100%;
       max-width: 820px;
@@ -217,6 +212,30 @@
       gap: 16px;
     }
 
+    .empty-prompt {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .empty-prompt-icon {
+      font-size: 36px;
+      opacity: 0.8;
+    }
+    .empty-prompt-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .empty-prompt-desc {
+      font-size: 13px;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
     .perfume-card {
       background: var(--surface);
       backdrop-filter: blur(14px);
@@ -228,6 +247,12 @@
       flex-direction: column;
       gap: 12px;
       box-shadow: var(--shadow);
+      animation: fadeInCard 0.25s ease;
+    }
+
+    @keyframes fadeInCard {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card-header {
@@ -352,7 +377,6 @@
     }
     .toggle-more-btn:hover { color: var(--gold); border-color: var(--gold-border); }
 
-    
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -417,7 +441,6 @@
     }
     .contact-opt-left { display: flex; align-items: center; gap: 10px; }
 
-    
     .toast {
       position: fixed;
       bottom: 24px;
@@ -436,7 +459,6 @@
     }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    
     footer {
       margin-top: auto;
       padding: 32px 0 12px;
@@ -476,11 +498,10 @@
   <p class="tagline">Lüks parfümlerin yerli muadil kodları ve hızlı yönlendirme arşivi.</p>
 
   <div class="search-wrapper">
-    <input type="text" id="searchInput" class="search-input" placeholder="Parfüm adı veya muadil kodu ara (örn: Sauvage, Aventus, 561)...">
+    <input type="text" id="searchInput" class="search-input" placeholder="Parfüm adı veya muadil kodu ara (örn: Sauvage, Aventus, 561)..." autocomplete="off">
     <span class="search-icon">🔍</span>
   </div>
 
-  
   <div class="partner-banner">
     <div class="partner-text">
       <div class="partner-title">✨ Markanızı veya Muadil Kodlarınızı Öne Çıkarın</div>
@@ -489,10 +510,9 @@
     <button class="partner-action-btn" onclick="openPartnerModal()">İş Birliği Başlat ➔</button>
   </div>
 
-  
+  <!-- Katalog Alanı (İlk açılışta boş/hazır bekler) -->
   <main class="catalog-list" id="catalogList"></main>
 
-  
   <div class="partner-banner bottom-banner">
     <div class="partner-text">
       <div class="partner-title">💼 Koku Markanız İçin Satış Ortaklığı</div>
@@ -503,7 +523,6 @@
 
   <div class="toast" id="toast">📋 Kod kopyalandı!</div>
 
-  
   <div class="modal-overlay" id="couponsModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -514,7 +533,6 @@
     </div>
   </div>
 
-  
   <div class="modal-overlay" id="partnerModal">
     <div class="modal-window">
       <div class="modal-head">
@@ -549,17 +567,18 @@
       <span>© 2026 Batuhan Bayatlı • İletişim</span>
     </a>
   </footer>
-<script>
+
+  <script>
     const SUPABASE_URL = 'https://wqzrwydjougseslvwype.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxenJ3eWRqb3Vnc2VzbHZ3eXBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NjY4MDEsImV4cCI6MjEwMzE0MjgwMX0.CFyfTGxAVBLo7CzeQJFQ7wNpNUA2pRxQj4Jj3zcdv5c';
 
     const fallbackCoupons = [];
     let allPerfumes = [];
+    let isDataReady = false;
 
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
 
-    
     const BRAND_ALIASES = {
       'ysl': 'yves saint laurent',
       'jpg': 'jean paul gaultier',
@@ -575,7 +594,6 @@
       'ck': 'calvin klein'
     };
 
-    
     function getSafeDupes(dupesData) {
       if (!dupesData) return [];
       if (Array.isArray(dupesData)) return dupesData;
@@ -590,7 +608,6 @@
       return [];
     }
 
-    
     function normalizeText(text) {
       if (!text) return '';
       return String(text)
@@ -609,8 +626,21 @@
         .trim();
     }
 
+    function showInitialPlaceholder() {
+      listEl.innerHTML = `
+        <div class="empty-prompt">
+          <div class="empty-prompt-icon">🔍</div>
+          <div class="empty-prompt-title">Aradığınız Parfümü Keşfedin</div>
+          <div class="empty-prompt-desc">
+            Muadil kodlarına ulaşmak için yukarıdaki arama kutusuna parfüm veya marka adını yazmaya başlayın.
+          </div>
+        </div>
+      `;
+    }
+
+    // Sessiz Yükleme: Arka planda çeker, DOM'u kirletmez
     async function loadData() {
-      listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Muadil kodları yükleniyor...</div>';
+      showInitialPlaceholder();
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
           method: 'GET',
@@ -623,16 +653,27 @@
 
         if (!res.ok) throw new Error('Veri çekilemedi.');
         allPerfumes = await res.json();
-        render(allPerfumes);
+        isDataReady = true;
+
+        // Kullanıcı veri inerken zaten bir şey yazdıysa aramayı anında çalıştır
+        if (searchInput.value.trim().length >= 2) {
+          handleSearch(searchInput.value);
+        }
       } catch (err) {
-        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;">Veriler yüklenirken bir sorun oluştu.</div>';
+        console.error('Veri yükleme hatası:', err);
       }
     }
 
     function render(items) {
       listEl.innerHTML = '';
       if (!items || items.length === 0) {
-        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:40px;">Aradığınız kriterde parfüm veya muadil kodu bulunamadı.</div>';
+        listEl.innerHTML = `
+          <div class="empty-prompt">
+            <div class="empty-prompt-icon">🧪</div>
+            <div class="empty-prompt-title">Sonuç Bulunamadı</div>
+            <div class="empty-prompt-desc">Aradığınız kriterde parfüm veya muadil kodu arşivimizde yer almıyor olabilir.</div>
+          </div>
+        `;
         return;
       }
 
@@ -732,13 +773,17 @@
       });
     }
 
-    // Arama Dinleyicisi
-    searchInput.addEventListener('input', (e) => {
-      const rawQuery = e.target.value;
-      const normalizedQuery = normalizeText(rawQuery);
+    function handleSearch(rawVal) {
+      const normalizedQuery = normalizeText(rawVal);
 
-      if (!normalizedQuery) {
-        render(allPerfumes);
+      // Arama boşsa veya 2 harften azsa ekranı temiz tut
+      if (!normalizedQuery || normalizedQuery.length < 2) {
+        showInitialPlaceholder();
+        return;
+      }
+
+      if (!isDataReady) {
+        listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;">⏳ Veritabanı hazırlanıyor, lütfen bekleyin...</div>';
         return;
       }
 
@@ -758,6 +803,10 @@
       });
 
       render(filtered);
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      handleSearch(e.target.value);
     });
 
     window.openCouponsModal = async function() {
@@ -828,6 +877,5 @@
 
     document.addEventListener('DOMContentLoaded', loadData);
   </script>
-  
 </body>
 </html>
