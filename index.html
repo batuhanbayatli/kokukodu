@@ -745,21 +745,180 @@
     const searchInput = document.getElementById('searchInput');
 
     const BRAND_ALIASES = {
+      // --- MEGA TASARIMCI MARKALARI & KISALTMALARI ---
       'ysl': 'yves saint laurent',
+      'yves': 'yves saint laurent',
+      'laurent': 'yves saint laurent',
+      
       'jpg': 'jean paul gaultier',
       'jpl': 'jean paul gaultier',
+      'gaultier': 'jean paul gaultier',
+      
       'dg': 'dolce gabbana',
       'd&g': 'dolce gabbana',
+      'dolce': 'dolce gabbana',
+      'gabbana': 'dolce gabbana',
+      
       'tf': 'tom ford',
-      'mfk': 'maison francis kurkdjian',
-      'lv': 'louis vuitton',
-      'vs': 'victorias secret',
-      'pdm': 'parfums de marly',
-      'mm': 'maison margiela',
+      'tomford': 'tom ford',
+      
       'ch': 'carolina herrera',
+      'herrera': 'carolina herrera',
+      
       'ck': 'calvin klein',
+      'calvin': 'calvin klein',
+      
+      'vs': 'victorias secret',
+      'victoria': 'victorias secret',
+      'victorias': 'victorias secret',
+      
+      'rl': 'ralph lauren',
+      'ralph': 'ralph lauren',
+      'polo': 'ralph lauren',
+      
+      'vr': 'viktor rolf',
+      'v&r': 'viktor rolf',
+      'viktor': 'viktor rolf',
+      
+      'dior': 'christian dior',
+      'cd': 'christian dior',
+      
+      'hermes': 'hermes',
+      'herme': 'hermes',
+      
+      'narciso': 'narciso rodriguez',
+      'rodriguez': 'narciso rodriguez',
+      'nr': 'narciso rodriguez',
+      
+      'gucci': 'gucci',
+      'prada': 'prada',
+      'versace': 'versace',
+      'burberry': 'burberry',
+      'givenchy': 'givenchy',
+      'lancome': 'lancome',
+      'bvlgari': 'bvlgari',
+      'bulgari': 'bvlgari',
+      'guerlain': 'guerlain',
+      'kenzo': 'kenzo',
+      'azzaro': 'azzaro',
+      'mugler': 'thierry mugler',
+      'zadig': 'zadig voltaire',
+      'boss': 'hugo boss',
+      'hugo': 'hugo boss',
+
+      // --- NİŞ / LÜKS PARFÜM EVLERİ ---
+      'mfk': 'maison francis kurkdjian',
+      'kurkdjian': 'maison francis kurkdjian',
+      'francis': 'maison francis kurkdjian',
+      
+      'pdm': 'parfums de marly',
+      'marly': 'parfums de marly',
+      
+      'lv': 'louis vuitton',
+      'vuitton': 'louis vuitton',
+      
+      'mm': 'maison margiela',
+      'margiela': 'maison margiela',
+      'replica': 'maison margiela',
+      
+      'lelabo': 'le labo',
+      'labo': 'le labo',
+      
+      'byredo': 'byredo',
+      'diptyque': 'diptyque',
+      'kilian': 'kilian',
+      'bykilian': 'kilian',
+      
+      'adp': 'acqua di parma',
+      'parma': 'acqua di parma',
+      
+      'penhaligons': 'penhaligons',
+      'penhaligon': 'penhaligons',
+      
+      'jhad': 'juliette has a gun',
+      'jhag': 'juliette has a gun',
+      'juliette': 'juliette has a gun',
+      
+      'vilhelm': 'vilhelm parfumerie',
+      'xerjoff': 'xerjoff',
+      'sospiro': 'sospiro',
+      'creed': 'creed',
+      'amouage': 'amouage',
+      'nishane': 'nishane',
+      'roja': 'roja dove',
+      'montale': 'montale',
+      'mancera': 'mancera',
+      'initio': 'initio',
+      'frederic': 'frederic malle',
+      'malle': 'frederic malle',
+      'tiziana': 'tiziana terenzi',
+      'terenzi': 'tiziana terenzi',
+
+      // --- POPÜLER PARFÜM JARGONLARI & KISALTMALARI ---
       'swy': 'stronger with you',
-      'armani': 'emporio armani'
+      'adg': 'acqua di gio',
+      'bdc': 'bleu de chanel',
+      'br540': 'baccarat rouge 540',
+      'baccarat': 'baccarat rouge 540',
+      'sauvage': 'dior sauvage',
+      'aventus': 'creed aventus',
+      'layton': 'parfums de marly layton',
+      'herod': 'parfums de marly herod',
+      'pegasus': 'parfums de marly pegasus',
+      'erba': 'erba pura',
+      'kirke': 'tiziana terenzi kirke',
+      'invictus': 'paco rabanne invictus',
+      'olympea': 'paco rabanne olympea',
+      'scandal': 'jean paul gaultier scandal',
+      'lemale': 'jean paul gaultier le male',
+      'ultramale': 'jean paul gaultier ultra male',
+      'lebeau': 'jean paul gaultier le beau',
+      'goodgirl': 'carolina herrera good girl',
+      'badboy': 'carolina herrera bad boy',
+      'blackopium': 'black opium',
+      'libre': 'ysl libre',
+      'myslf': 'ysl myslf',
+      'theone': 'dolce gabbana the one',
+      'lightblue': 'dolce gabbana light blue',
+      'lostcherry': 'tom ford lost cherry',
+      'tobaccovanille': 'tom ford tobacco vanille',
+      'ombreleather': 'tom ford ombre leather',
+      'fabulos': 'tom ford fucking fabulous',
+      'fabulous': 'tom ford fucking fabulous',
+      'woodsage': 'jo malone wood sage sea salt',
+      'angleshare': 'angels share',
+      'angelshare': 'angels share',
+      'applebrandy': 'apple brandy',
+      'santall33': 'santal 33',
+      'santal': 'santal 33',
+      'another13': 'another 13',
+      'another': 'another 13',
+      'baldafrique': 'bal d afrique',
+      'gypsywater': 'gypsy water',
+
+      // --- KLON / ARAP DÜNYASI HİTLERİ (ARANDIĞINDA ORİJİNALİ YAKALASIN DİYE) ---
+      'cdnim': 'creed aventus',
+      'clubdenuit': 'creed aventus',
+      'khamrah': 'angels share',
+      '9pm': 'ultra male',
+      '9am': 'acqua di gio',
+      'amberoud': 'erba pura',
+      'asad': 'sauvage elixir',
+      'suqraat': 'acqua di profondo',
+      'yarapink': 'yara',
+      'yara': 'lataffa yara',
+
+      // --- AÇIK PARFÜM MARKA YAZIM HATALARI ---
+      'bargello': 'bargello',
+      'bargelo': 'bargello',
+      'barjello': 'bargello',
+      'mad': 'mad parfum',
+      'muscent': 'muscent',
+      'muskent': 'muscent',
+      'davidwalker': 'david walker',
+      'david': 'david walker',
+      'walker': 'david walker',
+      'dw': 'david walker'
     };
 
     function getSafeDupes(dupesData) {
