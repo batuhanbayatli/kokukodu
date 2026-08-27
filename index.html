@@ -912,6 +912,11 @@
 
         allPerfumes = allData;
         isDataReady = true;
+        // Toplam parfüm sayısını dinamik olarak arayüze yazdır
+        const countEl = document.getElementById('perfumeCount');
+        if (countEl) {
+          countEl.innerText = allPerfumes.length.toLocaleString('tr-TR');
+        }
 
         if (searchInput.value.trim().length >= 2) {
           handleSearch(searchInput.value);
