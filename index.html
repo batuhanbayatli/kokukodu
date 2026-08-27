@@ -829,30 +829,17 @@
       }
     }
 
-    /* MOBİL VE MASAÜSTÜ İÇİN AKILLI TIKTOK ARAMA KÖPRÜSÜ */
+  /* MOBİL VE MASAÜSTÜ İÇİN AKILLI TIKTOK ARAMA KÖPRÜSÜ */
     window.openTikTokSearch = function(queryText) {
       const cleanQuery = queryText.replace(/['"]/g, '').trim();
       const encodedQuery = encodeURIComponent(cleanQuery);
-      
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
       if (isMobile) {
-        // Mobilde doğrudan uygulama içi arama şeması
-        const appUrl = `snssdk1233://search?keyword=${encodedQuery}`;
-        const webUrl = `https://www.tiktok.com/tag/${encodeURIComponent(cleanQuery.replace(/\s+/g, ''))}`;
-        const fallbackWeb = `https://www.tiktok.com/search?q=${encodedQuery}`;
-
-        const now = Date.now();
-        window.location.href = appUrl;
-
-        // Uygulama yüklü değilse 600ms içinde web aramasına düşür
-        setTimeout(() => {
-          if (Date.now() - now < 1200) {
-            window.open(fallbackWeb, '_blank');
-          }
-        }, 600);
+        // Mobilde doğrudan TikTok universal search tetiklenir (Çift yönlendirme/boş sayfa yapmaz)
+        window.location.href = `https://www.tiktok.com/search?q=${encodedQuery}`;
       } else {
-        // Masaüstünde standart web araması
+        // Masaüstünde yeni sekmede açılır
         window.open(`https://www.tiktok.com/search?q=${encodedQuery}`, '_blank');
       }
     };
