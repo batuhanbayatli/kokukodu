@@ -744,7 +744,7 @@
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
 
-   const BRAND_ALIASES = {
+    const BRAND_ALIASES = {
       'ysl': 'yves saint laurent',
       'jpg': 'jean paul gaultier',
       'jpl': 'jean paul gaultier',
@@ -759,7 +759,7 @@
       'ch': 'carolina herrera',
       'ck': 'calvin klein',
       'swy': 'stronger with you',
-      'armani': 'emporio armani giorgio armani'
+      'armani': 'emporio armani'
     };
 
     function getSafeDupes(dupesData) {
@@ -811,18 +811,38 @@
       checkAndShowAd();
 
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc`, {
-          method: 'GET',
-          headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json',
-            'Range': '0-9999'
-          }
-        });
+        let allData = [];
+        let page = 0;
+        const pageSize = 1000;
+        let hasMore = true;
 
-        if (!res.ok) throw new Error('Veri çekilemedi.');
-        allPerfumes = await res.json();
+        // Supabase 1.000 satır sınırını aşarak tüm sayfaları çeken döngü
+        while (hasMore) {
+          const from = page * pageSize;
+          const to = from + pageSize - 1;
+
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc`, {
+            method: 'GET',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': `Bearer ${SUPABASE_KEY}`,
+              'Content-Type': 'application/json',
+              'Range': `${from}-${to}`
+            }
+          });
+
+          if (!res.ok) throw new Error('Veri çekilemedi.');
+          const chunk = await res.json();
+          allData = allData.concat(chunk);
+
+          if (chunk.length < pageSize) {
+            hasMore = false;
+          } else {
+            page++;
+          }
+        }
+
+        allPerfumes = allData;
         isDataReady = true;
 
         if (searchInput.value.trim().length >= 2) {
@@ -833,7 +853,7 @@
       }
     }
 
-  /* %100 ÇALIŞAN GÜVENLİ TIKTOK ARAMA KÖPRÜSÜ */
+    /* %100 ÇALIŞAN GÜVENLİ TIKTOK ARAMA KÖPRÜSÜ */
     window.openTikTokSearch = function(queryText) {
       const cleanQuery = queryText.replace(/['"]/g, '').trim();
       const targetUrl = `https://www.google.com/search?q=${encodeURIComponent('site:tiktok.com ' + cleanQuery)}`;
