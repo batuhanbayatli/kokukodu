@@ -744,9 +744,10 @@
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
 
-    const BRAND_ALIASES = {
+   const BRAND_ALIASES = {
       'ysl': 'yves saint laurent',
       'jpg': 'jean paul gaultier',
+      'jpl': 'jean paul gaultier',
       'dg': 'dolce gabbana',
       'd&g': 'dolce gabbana',
       'tf': 'tom ford',
@@ -756,7 +757,9 @@
       'pdm': 'parfums de marly',
       'mm': 'maison margiela',
       'ch': 'carolina herrera',
-      'ck': 'calvin klein'
+      'ck': 'calvin klein',
+      'swy': 'stronger with you',
+      'armani': 'emporio armani giorgio armani'
     };
 
     function getSafeDupes(dupesData) {
@@ -808,12 +811,13 @@
       checkAndShowAd();
 
       try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc&limit=10000`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/perfumes?select=*&order=name.asc`, {
           method: 'GET',
           headers: {
             'apikey': SUPABASE_KEY,
             'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Range': '0-9999'
           }
         });
 
