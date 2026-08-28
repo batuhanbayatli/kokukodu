@@ -354,26 +354,158 @@
       gap: 16px;
     }
 
+    /* =========================================================
+       ULTRA DİKKAT ÇEKİCİ SPONSORLU VİTRİN / REKLAM ALANI
+       ========================================================= */
+    .showcase-wrapper {
+      margin-bottom: 20px;
+      animation: fadeInCard 0.3s ease;
+    }
+    .showcase-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+    .showcase-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.3px;
+    }
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 600px) {
+      .showcase-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .showcase-card {
+      position: relative;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      overflow: hidden;
+      background: var(--surface);
+      border: 1.5px solid var(--gold-border);
+      box-shadow: 0 6px 20px rgba(179, 128, 49, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .showcase-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(179, 128, 49, 0.2);
+    }
+
+    /* Çin Usulü Parlayan Neon & Shimmer Efekti */
+    .showcase-card.is-vip {
+      border: 1.5px solid rgba(255, 180, 0, 0.6);
+      background: linear-gradient(135deg, var(--gold-surface) 0%, var(--surface) 100%);
+      box-shadow: 0 0 15px rgba(255, 180, 0, 0.18);
+    }
+    .showcase-card.is-vip::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(60deg, transparent 20%, rgba(255, 255, 255, 0.35) 50%, transparent 80%);
+      transform: rotate(30deg);
+      animation: vipShimmer 3.5s infinite ease-in-out;
+      pointer-events: none;
+    }
+
+    @keyframes vipShimmer {
+      0% { transform: translateX(-100%) rotate(30deg); }
+      100% { transform: translateX(100%) rotate(30deg); }
+    }
+
+    .showcase-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .showcase-badge {
+      font-size: 10px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff8c00 0%, #ff0055 100%);
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(255, 0, 85, 0.3);
+      animation: pulseAttention 2s infinite ease-in-out;
+    }
+    .showcase-badge.vip-badge {
+      background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%);
+      color: #000;
+      box-shadow: 0 2px 10px rgba(255, 167, 81, 0.4);
+    }
+
+    .showcase-item-title {
+      font-size: 15.5px;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 4px;
+    }
+    .showcase-item-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      font-weight: 500;
+    }
+    .showcase-btn {
+      background: linear-gradient(135deg, var(--gold) 0%, #d4a359 100%);
+      border: none;
+      color: #000;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: block;
+      box-shadow: 0 4px 12px var(--gold-surface);
+    }
+    .showcase-btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.08);
+    }
+
     .empty-prompt {
       text-align: center;
-      padding: 40px 20px;
+      padding: 24px 20px;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .empty-prompt-icon {
-      font-size: 36px;
+      font-size: 30px;
       opacity: 0.8;
     }
     .empty-prompt-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text);
     }
     .empty-prompt-desc {
-      font-size: 13px;
+      font-size: 12px;
       max-width: 360px;
       line-height: 1.5;
     }
@@ -893,6 +1025,49 @@
       targetUrl: 'https://kokukodu.com'
     };
 
+    /* =========================================================
+       ÖNE ÇIKAN 4'LÜ SPONSORLU VİTRİN (Veritabanı Kullanmaz)
+       ========================================================= */
+    const SHOW_FEATURED_SHOWCASE = true; // true: Vitrin açık, false: Kapalı
+    const FEATURED_ITEMS = [
+      {
+        badge: '👑 SPONSORLU / ÖNERİLEN',
+        title: 'Sauvage (Dior)',
+        desc: 'Bargello 561 • Mad W112 • Muscent A102 • David Walker E110',
+        actionText: 'Kodları Listele 🔍',
+        searchTerm: 'Sauvage',
+        actionUrl: '',
+        isVip: true
+      },
+      {
+        badge: '✨ GÜNÜN POPÜLERİ',
+        title: 'Baccarat Rouge 540 (MFK)',
+        desc: 'Bargello 122 • Mad N101 • Muscent B140 • David Walker B10',
+        actionText: 'Kodları Listele 🔍',
+        searchTerm: 'Baccarat Rouge',
+        actionUrl: '',
+        isVip: false
+      },
+      {
+        badge: '🔥 EN ÇOK ARANAN ERKEK',
+        title: 'Stronger With You (Armani)',
+        desc: 'Bargello 585 • Mad S102 • Muscent S118 • David Walker S44',
+        actionText: 'Kodları Listele 🔍',
+        searchTerm: 'Stronger With You',
+        actionUrl: '',
+        isVip: true
+      },
+      {
+        badge: '💎 EN ÇOK ARANAN KADIN',
+        title: 'Libre (Yves Saint Laurent)',
+        desc: 'Bargello 402 • Mad Y104 • Muscent L122 • David Walker L88',
+        actionText: 'Kodları Listele 🔍',
+        searchTerm: 'Libre',
+        actionUrl: '',
+        isVip: false
+      }
+    ];
+
     const fallbackCoupons = [];
     let allPerfumes = [];
     let isDataReady = false;
@@ -1009,7 +1184,38 @@
     }
 
     function showInitialPlaceholder() {
+      let showcaseHtml = '';
+
+      if (SHOW_FEATURED_SHOWCASE && FEATURED_ITEMS && FEATURED_ITEMS.length > 0) {
+        showcaseHtml = `
+          <div class="showcase-wrapper">
+            <div class="showcase-header">
+              <div class="showcase-title">🔥 ÖNE ÇIKANLAR & SPONSORLU VİTRİN</div>
+            </div>
+            <div class="showcase-grid">
+              ${FEATURED_ITEMS.map(item => `
+                <div class="showcase-card ${item.isVip ? 'is-vip' : ''}">
+                  <div class="showcase-top-row">
+                    <span class="showcase-badge ${item.isVip ? 'vip-badge' : ''}">${item.badge}</span>
+                  </div>
+                  <div>
+                    <div class="showcase-item-title">${item.title}</div>
+                    <div class="showcase-item-desc">${item.desc}</div>
+                  </div>
+                  ${item.actionUrl ? `
+                    <a href="${item.actionUrl}" target="_blank" rel="noopener noreferrer" class="showcase-btn">${item.actionText}</a>
+                  ` : `
+                    <button onclick="applyHistorySearch('${item.searchTerm}')" class="showcase-btn">${item.actionText}</button>
+                  `}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       listEl.innerHTML = `
+        ${showcaseHtml}
         <div class="empty-prompt">
           <div class="empty-prompt-icon">🔍</div>
           <div class="empty-prompt-title">Aradığınız Parfümü Keşfedin</div>
@@ -1203,7 +1409,6 @@
     };
 
     function copyCode(brand, code) {
-      // GA4 Olay Bildirimi: Hangi marka/kod kopyalandı?
       if (window.gtag) {
         gtag('event', 'copy_code', {
           event_category: 'interaction',
@@ -1237,7 +1442,6 @@
         return;
       }
 
-      // Yazma bittikten 1 saniye sonra tam sorguyu geçmişe kaydet ve GA4'e bildir (Debounce)
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
         saveSearchToHistory(rawVal);
@@ -1270,7 +1474,6 @@
       handleSearch(e.target.value);
     });
 
-    // Enter tuşuna basıldığında beklemeden tam sorguyu anında kaydet
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         clearTimeout(searchDebounceTimer);
@@ -1290,7 +1493,6 @@
       const clean = query.trim();
       if (!clean || clean.length < 2) return;
 
-      // GA4 Olay Bildirimi: Kullanıcı ne arattı?
       if (window.gtag) {
         gtag('event', 'search_perfume', {
           event_category: 'search',
@@ -1343,7 +1545,6 @@
         favorites.push(id);
       }
 
-      // GA4 Olay Bildirimi: Favori Ekleme / Çıkarma
       if (window.gtag) {
         gtag('event', isAdding ? 'add_to_favorites' : 'remove_from_favorites', {
           perfume_id: id
