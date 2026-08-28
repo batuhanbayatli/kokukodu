@@ -137,7 +137,7 @@
       width: 100%;
       max-width: 680px;
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .search-input {
       width: 100%;
@@ -167,6 +167,96 @@
       color: var(--gold);
       pointer-events: none;
     }
+
+    /* Arama Araç Çubuğu (Geçmiş & Favoriler) */
+    .search-toolbar {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 0 4px;
+    }
+    .history-chips-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 2px 0;
+    }
+    .history-chips-box::-webkit-scrollbar { display: none; }
+    .history-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .history-chip:hover {
+      border-color: var(--gold-border);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
+    .history-clear-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: color 0.2s ease;
+    }
+    .history-clear-btn:hover { color: #ef4444; }
+
+    .fav-filter-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+      transition: all 0.2s ease;
+    }
+    .fav-filter-btn:hover {
+      border-color: rgba(239, 68, 68, 0.4);
+      transform: translateY(-1px);
+    }
+    .fav-filter-btn.active {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+    }
+
+    .fav-card-btn {
+      background: none;
+      border: none;
+      font-size: 17px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+    .fav-card-btn:hover { transform: scale(1.25); }
 
     .partner-banner {
       width: 100%;
@@ -641,15 +731,24 @@
   </div>
 
   <p class="tagline">
-  <span id="perfumeCountBadge" style="display:inline-flex; align-items:center; gap:5px; background:var(--gold-surface); color:var(--gold); border:1px solid var(--gold-border); padding:3px 9px; border-radius:12px; font-weight:800; font-size:12px; margin-right:6px;">
-    ✨ <span id="perfumeCount">...</span> Adet Parfüm Ekli!
-  </span>
-  Lüks parfümlerin güncel muadil kodları ve hızlı yönlendirme arşivi.
-</p>
+    <span id="perfumeCountBadge" style="display:inline-flex; align-items:center; gap:5px; background:var(--gold-surface); color:var(--gold); border:1px solid var(--gold-border); padding:3px 9px; border-radius:12px; font-weight:800; font-size:12px; margin-right:6px;">
+      ✨ <span id="perfumeCount">...</span> Adet Parfüm Ekli!
+    </span>
+    Lüks parfümlerin güncel muadil kodları ve hızlı yönlendirme arşivi.
+  </p>
 
   <div class="search-wrapper">
     <input type="text" id="searchInput" class="search-input" placeholder="Parfüm adı veya muadil kodu ara (örn: Sauvage, Aventus, 561)..." autocomplete="off">
     <span class="search-icon">🔍</span>
+  </div>
+
+  <!-- Arama Araç Çubuğu: Geçmiş Aramalar & Favorilerim Filtresi -->
+  <div class="search-toolbar">
+    <div class="history-chips-box" id="searchHistoryContainer"></div>
+    <button class="fav-filter-btn" id="favFilterBtn" onclick="toggleFavoritesFilter()" title="Kaydedilen favorileri filtrele">
+      <span>❤️</span>
+      <span id="favCountText">Favorilerim (0)</span>
+    </button>
   </div>
 
   <div class="partner-banner">
@@ -745,12 +844,15 @@
     const fallbackCoupons = [];
     let allPerfumes = [];
     let isDataReady = false;
+    let searchHistory = JSON.parse(localStorage.getItem('kk_history') || '[]');
+    let favorites = JSON.parse(localStorage.getItem('kk_favs') || '[]');
+    let isFavoritesOnly = false;
+    let searchDebounceTimer = null;
 
     const listEl = document.getElementById('catalogList');
     const searchInput = document.getElementById('searchInput');
 
     const BRAND_ALIASES = {
-      // --- KISALTMALAR & HARF HATALARI (Veritabanındaki Gerçek İsimlere Bağlı) ---
       'ysl': 'yves saint laurent',
       'jpg': 'jean paul gaultier',
       'jpl': 'jean paul gaultier',
@@ -769,8 +871,6 @@
       'mugler': 'thierry mugler',
       'zadig': 'zadig voltaire',
       'boss': 'hugo boss',
-
-      // --- NİŞ KISALTMALAR ---
       'mfk': 'maison francis kurkdjian',
       'pdm': 'parfums de marly',
       'lv': 'louis vuitton',
@@ -783,8 +883,6 @@
       'jhag': 'juliette has a gun',
       'jhad': 'juliette has a gun',
       'vilhelm': 'vilhelm parfumerie',
-
-      // --- POPÜLER MODEL JARGONLARI & KISALTMALARI ---
       'swy': 'stronger with you',
       'adg': 'acqua di gio',
       'bdc': 'bleu de chanel',
@@ -810,8 +908,6 @@
       'myslf': 'myslf',
       'theone': 'the one',
       'lightblue': 'light blue',
-
-      // --- KLON / ARAP MARKALARI ARATILDIĞINDA ORİJİNALİ GETİRME ---
       'cdnim': 'aventus',
       'clubdenuit': 'aventus',
       'khamrah': 'angels share',
@@ -819,8 +915,6 @@
       '9am': 'acqua di gio',
       'amberoud': 'erba pura',
       'asad': 'sauvage elixir',
-
-      // --- AÇIK PARFÜM MARKA YAZIMLARI ---
       'bargello': 'bargello',
       'bargelo': 'bargello',
       'barjello': 'bargello',
@@ -877,6 +971,7 @@
     async function loadData() {
       showInitialPlaceholder();
       checkAndShowAd();
+      initStorageUI();
 
       try {
         let allData = [];
@@ -884,7 +979,6 @@
         const pageSize = 1000;
         let hasMore = true;
 
-        // Supabase 1.000 satır sınırını aşarak tüm sayfaları çeken döngü
         while (hasMore) {
           const from = page * pageSize;
           const to = from + pageSize - 1;
@@ -912,7 +1006,7 @@
 
         allPerfumes = allData;
         isDataReady = true;
-        // Toplam parfüm sayısını dinamik olarak arayüze yazdır
+
         const countEl = document.getElementById('perfumeCount');
         if (countEl) {
           countEl.innerText = allPerfumes.length.toLocaleString('tr-TR');
@@ -938,9 +1032,9 @@
       if (!items || items.length === 0) {
         listEl.innerHTML = `
           <div class="empty-prompt">
-            <div class="empty-prompt-icon">🧪</div>
-            <div class="empty-prompt-title">Sonuç Bulunamadı</div>
-            <div class="empty-prompt-desc">Aradığınız kriterde parfüm veya muadil kodu arşivimizde yer almıyor olabilir.</div>
+            <div class="empty-prompt-icon">${isFavoritesOnly ? '💔' : '🧪'}</div>
+            <div class="empty-prompt-title">${isFavoritesOnly ? 'Henüz Favori Parfümünüz Yok' : 'Sonuç Bulunamadı'}</div>
+            <div class="empty-prompt-desc">${isFavoritesOnly ? 'Parfüm kartlarındaki kalp ikonuna tıklayarak beğendiğiniz parfümleri buraya kaydedebilirsiniz.' : 'Aradığınız kriterde parfüm veya muadil kodu arşivimizde yer almıyor olabilir.'}</div>
           </div>
         `;
         return;
@@ -957,10 +1051,10 @@
         const visibleDupes = dupes.slice(0, initialLimit);
         const hiddenDupes = dupes.slice(initialLimit);
 
-        // Arama Terimleri
         const searchPhrase = `${p.brand || ''} ${p.name || ''} inceleme`.trim();
         const fragranticaQuery = encodeURIComponent(`${p.brand || ''} ${p.name || ''}`.trim());
         const fragranticaUrl = `https://www.fragrantica.com/search/?query=${fragranticaQuery}`;
+        const isFav = favorites.includes(p.id);
 
         const card = document.createElement('div');
         card.className = 'perfume-card';
@@ -990,6 +1084,9 @@
               <span>${p.brand} • ${p.gender}</span>
             </div>
             <div class="header-links-group">
+              <button class="fav-card-btn" id="fav-btn-${p.id}" onclick="toggleFavorite('${p.id}', event)" title="Favorilere Ekle / Çıkar">
+                ${isFav ? '❤️' : '🤍'}
+              </button>
               <a href="${fragranticaUrl}" target="_blank" rel="noopener noreferrer" class="tiktok-search-btn" title="Fragrantica'da koku notalarını ve yorumları incele">
                 <img src="fragrantica.png" alt="Fragrantica" style="width:12px; height:12px; object-fit:contain;" onerror="this.style.display='none'">
                 <span>Fragrantica</span>
@@ -1063,7 +1160,11 @@
       const normalizedQuery = normalizeText(rawVal);
 
       if (!normalizedQuery || normalizedQuery.length < 2) {
-        showInitialPlaceholder();
+        if (isFavoritesOnly) {
+          applyFavoritesView();
+        } else {
+          showInitialPlaceholder();
+        }
         return;
       }
 
@@ -1072,10 +1173,21 @@
         return;
       }
 
+      // Yazma bittikten 1 saniye sonra tam sorguyu geçmişe kaydet (Debounce)
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        saveSearchToHistory(rawVal);
+      }, 1000);
+
       const rawTokens = normalizedQuery.split(' ').filter(t => t.length > 0);
       const queryTokens = rawTokens.map(token => BRAND_ALIASES[token] || token);
 
-      const filtered = allPerfumes.filter(p => {
+      let targetDataset = allPerfumes;
+      if (isFavoritesOnly) {
+        targetDataset = allPerfumes.filter(p => favorites.includes(p.id));
+      }
+
+      const filtered = targetDataset.filter(p => {
         const dupes = getSafeDupes(p.dupes);
         const dupeContent = dupes.map(d => `${d.brand || ''} ${d.code || ''}`).join(' ');
         const brandNormalized = normalizeText(p.brand || '');
@@ -1093,6 +1205,107 @@
     searchInput.addEventListener('input', (e) => {
       handleSearch(e.target.value);
     });
+
+    // Enter tuşuna basıldığında beklemeden tam sorguyu anında kaydet
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        clearTimeout(searchDebounceTimer);
+        saveSearchToHistory(e.target.value);
+      }
+    });
+
+    /* =========================================================
+       ARAMA GEÇMİŞİ & FAVORİLER SİSTEMİ (localStorage)
+       ========================================================= */
+    function initStorageUI() {
+      renderSearchHistory();
+      updateFavCountUI();
+    }
+
+    function saveSearchToHistory(query) {
+      const clean = query.trim();
+      if (!clean || clean.length < 2) return;
+      searchHistory = [clean, ...searchHistory.filter(q => q.toLowerCase() !== clean.toLowerCase())].slice(0, 5);
+      localStorage.setItem('kk_history', JSON.stringify(searchHistory));
+      renderSearchHistory();
+    }
+
+    function renderSearchHistory() {
+      const container = document.getElementById('searchHistoryContainer');
+      if (!container) return;
+
+      if (searchHistory.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      let html = `<span style="font-size:11px; color:var(--text-muted); margin-right:2px;">🕒 Son:</span>`;
+      searchHistory.forEach(item => {
+        const safeItem = item.replace(/'/g, "\\'");
+        html += `<button class="history-chip" onclick="applyHistorySearch('${safeItem}')">${item}</button>`;
+      });
+      html += `<button class="history-clear-btn" onclick="clearSearchHistory()" title="Geçmişi Temizle">✕</button>`;
+      container.innerHTML = html;
+    }
+
+    window.applyHistorySearch = function(term) {
+      searchInput.value = term;
+      handleSearch(term);
+    };
+
+    window.clearSearchHistory = function() {
+      searchHistory = [];
+      localStorage.removeItem('kk_history');
+      renderSearchHistory();
+    };
+
+    window.toggleFavorite = function(id, event) {
+      if (event) event.stopPropagation();
+
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(favId => favId !== id);
+      } else {
+        favorites.push(id);
+      }
+
+      localStorage.setItem('kk_favs', JSON.stringify(favorites));
+      updateFavCountUI();
+
+      if (isFavoritesOnly) {
+        applyFavoritesView();
+      } else {
+        const btn = document.getElementById(`fav-btn-${id}`);
+        if (btn) btn.innerHTML = favorites.includes(id) ? '❤️' : '🤍';
+      }
+    };
+
+    function updateFavCountUI() {
+      const countEl = document.getElementById('favCountText');
+      if (countEl) countEl.innerText = `Favorilerim (${favorites.length})`;
+    }
+
+    window.toggleFavoritesFilter = function() {
+      isFavoritesOnly = !isFavoritesOnly;
+      const btn = document.getElementById('favFilterBtn');
+
+      if (isFavoritesOnly) {
+        btn.classList.add('active');
+        applyFavoritesView();
+      } else {
+        btn.classList.remove('active');
+        if (searchInput.value.trim().length >= 2) {
+          handleSearch(searchInput.value);
+        } else {
+          showInitialPlaceholder();
+        }
+      }
+    };
+
+    function applyFavoritesView() {
+      if (!isDataReady) return;
+      const favList = allPerfumes.filter(p => favorites.includes(p.id));
+      render(favList);
+    }
 
     function checkAndShowAd() {
       if (!SHOW_POPUP_AD) return;
